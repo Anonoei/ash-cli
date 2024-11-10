@@ -1,0 +1,44 @@
+function _ash_extra_help {
+    echo "Usage:  ash extra [OPTIONS] COMMAND"
+    echo ""
+    echo "Install AnoSH extras"
+    echo ""
+    echo "Commands:"
+    echo "  help.......................shows this message"
+    echo "  list.......................lists available extras"
+    echo "  update.....................updates installed extras"
+    echo "  install....................install an extra"
+    echo "  uninstall..................uninstall an extra"
+    echo ""
+}
+
+if [[ $# -eq 0 ]]; then
+    _ash_extra_help
+    return
+fi
+
+source "${_ANOSH_PATH_COMMON}/ash.d/extra.d/main"
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_extra_help $*
+        ;;
+    list)
+        _ash_extra_list $*
+        ;;
+    update)
+        _ash_extra_update $*
+        ;;
+    install)
+        _ash_extra_install $*
+        ;;
+    uninstall)
+        _ash_extra_uninstall $*
+        ;;
+    *)
+        echo "Unknown ash extra syntax: ash extra $ASH_CMD $*"
+        echo "Run 'ash extra help' for more information"
+        ;;
+esac

@@ -1,0 +1,89 @@
+function _ash_help {
+    echo -ne "$(_ash_escape -s bold -c bblack -c fred)"
+    echo '    ___  _____ __  __'
+    echo '   /   |/ ___// / / /'
+    echo '  / /| |\__ \/ /_/ / '
+    echo ' / ___ |__/ / __  /  '
+    echo '/_/  |_|___/_/ /_/   '
+    echo -ne "$(_ash_escape -r)"
+    echo "ASH CLI v${ASH_VER_CLI}"
+    echo ""
+    echo "Usage:  ash COMMAND"
+    echo ""
+    echo "CLI helper"
+    echo ""
+    echo "Commands:"
+    echo " ASH:"
+    echo "  help.......................show this message"
+    echo "  reinstall..................reinstall ASH"
+    echo "  uninstall..................uninstall ASH"
+    echo "  update.....................update ASH"
+    echo "  config.....................ASH configuration helper"
+    echo "  extra......................ASH extras"
+    echo "  escape.....................ANSI escape helper"
+    echo "  log........................ASH logger"
+
+    echo " Extras:"
+    echo "  pkg........................manage packages"
+    echo "  escape.....................ansi escape helper"
+    echo ""
+    echo "Functions:"
+    echo "  showip.....................show ips"
+    echo ""
+    echo "Run 'ash COMMAND --help' for more information on a command"
+}
+
+source $ASH_ROOT/ash.d/escape
+
+if [[ $# -eq 0 ]]; then
+    _ash_extra_help
+    return
+fi
+
+source $ASH_ROOT/logger "ASH" -l "TRACE"
+ASH_error "main" "Test!"
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_help $*
+        ;;
+    reinstall)
+        _ash_reinstall $*
+        ;;
+    uninstall)
+        _ash_uninstall $*
+        ;;
+    reload)
+        source $ASH_ROOT/a.sh
+        ;;
+    update|-u)
+        _ash_update $*
+        ;;
+    config)
+        _ash_config $*
+        ;;
+    extra)
+        source $ASH_ROOT/ash.d/extra $*
+        ;;
+    escape)
+        _ash_escape $*
+        ;;
+    *)
+        echo "Unknown ash syntax: ash $ASH_CMD $*"
+        echo "Run 'ash help' for more information"
+        ;;
+esac
+
+# source "${_ANOSH_PATH_COMMON}/ash.d/common"
+
+# source "${_ANOSH_PATH_COMMON}/ash.d/pkg"
+
+# source "${_ANOSH_PATH_COMMON}/ash.d/escape"
+
+# source "${_ANOSH_PATH_COMMON}/ash.d/extra"
+
+# source "${_ANOSH_PATH_COMMON}/ash.d/config"
+
+# source "${_ANOSH_PATH_COMMON}/ash.d/funcs"

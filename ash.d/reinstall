@@ -1,0 +1,7 @@
+
+ash_info "ash.common" "Reinstalling from $ANOSH_DOWN/nix/install"
+if [[ ! $ASH_SRC == /* ]]; then
+    $SHELL <(curl -sS "$ANOSH_DOWN/nix/install") $ASH_SHELL
+else
+    $SHELL <(cat $ANOSH_DOWN/nix/install) $ASH_SHELL
+fi

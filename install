@@ -1,0 +1,75 @@
+# ASH CLI installer
+# (C) Anonoei, Licenced under the MIT license
+
+ASH_SRC="https://github.com/anonoei/ash-cli"
+ASH_ROOT="${HOME}/.local/ash"
+ASH_CONFIG="${HOME}/.config/ash"
+# ---------------------- #
+
+ARG_FORCE=0
+ARG_DIR=
+
+function show_help {
+    echo "ASH installer"
+    echo ""
+    echo "Arguments:"
+    echo "  -h|--help..................show this message"
+    echo "  -f|--force.................overwrite settings if they exist"
+    echo "  -d|--dir...................install to this directory"
+}
+
+function parse_args {
+    if [[ $# -eq 0 ]]; then
+        return
+    fi
+    ASH_ARG=$1
+    shift
+    case $ASH_ARG in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -f|--force)
+            ARG_FORCE=1
+            ;;
+        -d|--dir)
+            ARG_DIR=$1
+            shift
+            ;;
+        *)
+            echo "Unknown argument! $1"
+            exit 1
+            ;;
+    esac
+}
+
+parse_args $*
+
+if [[ $ARG_FORCE -eq 1 ]]; then
+    echo "Removing $ASH_CONFIG"
+    rm -rf $ASH_CONFIG
+fi
+
+if [[ ! -z $ARG_DIR ]]; then
+    echo "Setting ASH_ROOT to $ARG_DIR"
+    ASH_ROOT=$ARG_DIR
+fi
+
+mkdir -p $ASH_ROOT
+mkdir -p $ASH_CONFIG/plugins
+
+echo "Cloning ASH..."
+git clone $ASH_SRC "$ASH_ROOT"
+
+if [[ ! -f "$ASH_CONFIG/ash.conf" ]]; then
+    echo "Copying default configuration..."
+    cp $ASH_ROOT/ash.conf.defaults $ASH_CONFIG/ash.conf
+fi
+
+echo ""
+echo "ASH is installed!"
+echo ""
+echo "To add ASH to your shell please add the following to your RC file:"
+echo ""
+echo "source $ASH_ROOT/a.sh"
+echo ""

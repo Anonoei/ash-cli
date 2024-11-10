@@ -1,0 +1,53 @@
+_ash_pkg_install() {
+    case $ANOSH_PKGMAN in
+        yum|dnf)
+            sudo $ANOSH_PKGMAN install $*
+            ;;
+        apt)
+            sudo $ANOSH_PKGMAN install $*
+            ;;
+        pacman)
+            sudo $ANOSH_PKGMAN -Syu $*
+            ;;
+        brew)
+            sudo $ANOSH_PKGMAN install $*
+            ;;
+        *)
+            echo "Unknown package manager: $ANOSH_PKGMAN"
+            ;;
+    esac
+}
+
+_ash_pkg_remove() {
+    case $ANOSH_PKGMAN in
+        yum|dnf)
+            sudo $ANOSH_PKGMAN remove $*
+            ;;
+        apt)
+            sudo $ANOSH_PKGMAN remove $*
+            ;;
+        pacman)
+            sudo $ANOSH_PKGMAN -Rs $*
+            ;;
+        *)
+            echo "Unknown package manager: $ANOSH_PKGMAN"
+            ;;
+    esac
+}
+
+_ash_pkg_update() {
+    case $ANOSH_PKGMAN in
+        yum|dnf)
+            sudo $ANOSH_PKGMAN update
+            ;;
+        apt)
+            sudo $ANOSH_PKGMAN update
+            ;;
+        pacman)
+            sudo $ANOSH_PKGMAN -Sy
+            ;;
+        *)
+            echo "Unknown package manager: $ANOSH_PKGMAN"
+            ;;
+    esac
+}
