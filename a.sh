@@ -1,7 +1,7 @@
 #!/bin/bash
 # ASH CLI
 
-ASH_VERSION="0.3.1"
+ASH_VERSION="0.3.3"
 ASH_CONFIG="${HOME}/.config/ash"
 ASH_EXTRAS=()
 

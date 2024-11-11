@@ -20,12 +20,12 @@ function _ash_fmt_help_items {
     local pad=$(printf '%0.2s' "._"{1..20})
 
     for item in ${arr[@]}; do
-        item=(${item//\;/ })
-        comm=${item[0]}
-        desc=${item[1]}
+        local item=(${item//\;/ })
+        local comm=${item[0]}
+        local desc=${item[1]}
 
-        msg="$(printf '%s' "$comm")${pad:${#comm}}$(printf '%s\n' "$desc")"
-        msg=${msg//_/ }
+        local msg="$(printf '%s' "$comm")${pad:${#comm}}$(printf '%s\n' "$desc")"
+        local msg=${msg//_/ }
         echo "  $msg"
     done
 }

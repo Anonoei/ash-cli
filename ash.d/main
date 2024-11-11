@@ -11,7 +11,7 @@ function _ash_help {
         "R|reinstall;reinstall_ASH"
         "U|uninstall;uninstall_ASH"
         "u|update;update_ASH"
-        "c|config;ASH_configuration_helper"
+        "s|state;ASH_configuration_helper"
         "x|extra;ASH_extras"
         "e|escape;ANSI_escape_helper"
         "__log;ASH_logger"
@@ -44,8 +44,8 @@ case $ASH_CMD in
     r|reload)
         source $ASH_ROOT/a.sh
         ;;
-    c|config)
-        source $ASH_ROOT/ash.d/config $*
+    s|state)
+        source $ASH_ROOT/ash.d/state $*
         ;;
     x|extra)
         source $ASH_ROOT/ash.d/extra $*
