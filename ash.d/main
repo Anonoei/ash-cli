@@ -1,33 +1,5 @@
-function _ash_banner {
-    echo -ne "$(_ash_escape -s bold -c bblack -c fred)"
-    echo '    ___  _____ __  __'
-    echo '   /   |/ ___// / / /'
-    echo '  / /| |\__ \/ /_/ / '
-    echo ' / ___ |__/ / __  /  '
-    echo '/_/  |_|___/_/ /_/   '
-    echo -ne "$(_ash_escape -r)"
-    echo -e "$(_ash_escape -s italic)ASH$(_ash_escape -r) CLI $(_ash_escape -c fblue)v${ASH_VERSION}$(_ash_escape -r)"
-    echo ""
-}
-
-function _ash_fmt_help {
-    # $1 = command
-    local arr=("$@")
-    local pad=$(printf '%0.2s' "._"{1..20})
-
-    for item in ${arr[@]}; do
-        item=(${item//\;/ })
-        comm=${item[0]}
-        desc=${item[1]}
-
-        msg="$(printf '%s' "$comm")${pad:${#comm}}$(printf '%s\n' "$desc")"
-        msg=${msg//_/ }
-        echo "  $msg"
-    done
-}
-
 function _ash_help {
-    _ash_banner
+    _ash_fmt_banner
     echo "Usage:  ash COMMAND"
     echo ""
     echo "CLI helper"
@@ -44,9 +16,9 @@ function _ash_help {
         "e|escape;ANSI_escape_helper"
         "__log;ASH_logger"
         )
-    _ash_fmt_help "${commands[@]}"
+    _ash_fmt_help_items "${commands[@]}"
     echo ""
-    echo "Run 'ash COMMAND --help' for more information on a command"
+    echo "Run 'ash COMMAND help' for more information on a command"
 }
 
 if [[ $# -eq 0 ]]; then

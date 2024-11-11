@@ -35,7 +35,8 @@ mkdir -p $ASH_CONFIG/plugins
 source $ASH_ROOT/ash.d/escape
 source $ASH_ROOT/logger "ASH" -l "TRACE"
 
-source $ASH_ROOT/install
+source $ASH_ROOT/ash.d/fmt
+source $ASH_ROOT/ash.d/install
 
 function ash {
     source $ASH_ROOT/ash.d/main $*
