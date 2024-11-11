@@ -1,4 +1,4 @@
-function _ash_help {
+function _ash_banner {
     echo -ne "$(_ash_escape -s bold -c bblack -c fred)"
     echo '    ___  _____ __  __'
     echo '   /   |/ ___// / / /'
@@ -6,84 +6,86 @@ function _ash_help {
     echo ' / ___ |__/ / __  /  '
     echo '/_/  |_|___/_/ /_/   '
     echo -ne "$(_ash_escape -r)"
-    echo "ASH CLI v${ASH_VER_CLI}"
+    echo -e "$(_ash_escape -s italic)ASH$(_ash_escape -r) CLI $(_ash_escape -c fblue)v${ASH_VERSION}$(_ash_escape -r)"
     echo ""
+}
+
+function _ash_fmt_help {
+    # $1 = command
+    local arr=("$@")
+    local pad=$(printf '%0.2s' "._"{1..20})
+
+    for item in ${arr[@]}; do
+        item=(${item//\;/ })
+        comm=${item[0]}
+        desc=${item[1]}
+
+        msg="$(printf '%s' "$comm")${pad:${#comm}}$(printf '%s\n' "$desc")"
+        msg=${msg//_/ }
+        echo "  $msg"
+    done
+}
+
+function _ash_help {
+    _ash_banner
     echo "Usage:  ash COMMAND"
     echo ""
     echo "CLI helper"
     echo ""
     echo "Commands:"
     echo " ASH:"
-    echo "  help.......................show this message"
-    echo "  reinstall..................reinstall ASH"
-    echo "  uninstall..................uninstall ASH"
-    echo "  update.....................update ASH"
-    echo "  config.....................ASH configuration helper"
-    echo "  extra......................ASH extras"
-    echo "  escape.....................ANSI escape helper"
-    echo "  log........................ASH logger"
-
-    echo " Extras:"
-    echo "  pkg........................manage packages"
-    echo "  escape.....................ansi escape helper"
-    echo ""
-    echo "Functions:"
-    echo "  showip.....................show ips"
+    commands=(
+        "h|help;show_this_message"
+        "R|reinstall;reinstall_ASH"
+        "U|uninstall;uninstall_ASH"
+        "u|update;update_ASH"
+        "c|config;ASH_configuration_helper"
+        "x|extra;ASH_extras"
+        "e|escape;ANSI_escape_helper"
+        "__log;ASH_logger"
+        )
+    _ash_fmt_help "${commands[@]}"
     echo ""
     echo "Run 'ash COMMAND --help' for more information on a command"
 }
 
-source $ASH_ROOT/ash.d/escape
-
 if [[ $# -eq 0 ]]; then
-    _ash_extra_help
+    _ash_help
     return
 fi
-
-source $ASH_ROOT/logger "ASH" -l "TRACE"
-ASH_error "main" "Test!"
 
 ASH_CMD=$1
 shift
 case $ASH_CMD in
-    help|-h|--help)
+    h|help|-h|--help)
         _ash_help $*
         ;;
-    reinstall)
+    R|reinstall)
         _ash_reinstall $*
         ;;
-    uninstall)
+    U|uninstall)
         _ash_uninstall $*
         ;;
-    reload)
-        source $ASH_ROOT/a.sh
-        ;;
-    update|-u)
+    u|update)
         _ash_update $*
         ;;
-    config)
-        _ash_config $*
+    r|reload)
+        source $ASH_ROOT/a.sh
         ;;
-    extra)
+    c|config)
+        source $ASH_ROOT/ash.d/config $*
+        ;;
+    x|extra)
         source $ASH_ROOT/ash.d/extra $*
         ;;
-    escape)
+    e|escape)
         _ash_escape $*
+        ;;
+    log)
+        source $ASH_ROOT/ash.d/log $*
         ;;
     *)
         echo "Unknown ash syntax: ash $ASH_CMD $*"
         echo "Run 'ash help' for more information"
         ;;
 esac
-
-# source "${_ANOSH_PATH_COMMON}/ash.d/common"
-
-# source "${_ANOSH_PATH_COMMON}/ash.d/pkg"
-
-# source "${_ANOSH_PATH_COMMON}/ash.d/escape"
-
-# source "${_ANOSH_PATH_COMMON}/ash.d/extra"
-
-# source "${_ANOSH_PATH_COMMON}/ash.d/config"
-
-# source "${_ANOSH_PATH_COMMON}/ash.d/funcs"

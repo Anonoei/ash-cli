@@ -1,0 +1,40 @@
+function _ash_reinstall {
+    ASH_info "ash.reinstall" "Reinstalling from $ASH_DOWN/install"
+
+    if [[ ! $ASH_DOWN == /* ]]; then
+        $SHELL <(curl -sS "$ASH_DOWN/install")
+    else
+        $SHELL <(cat $ASH_DOWN/install)
+    fi
+}
+
+function _ash_uninstall {
+    ASH_info "ash.uninstall" "Uninstalling..."
+
+    ASH_warn "ash.uninstall" "Deleting $ASH_ROOT"
+
+    rm -rf $ASH_ROOT
+    ASH_info "ash.uninstall" "ASH has been uninstalled!"
+
+    echo ""
+    echo "Please remove ASH from your RC file."
+    echo ""
+}
+
+function _ash_update {
+    old_path=$PWD
+    cd $ASH_ROOT
+
+    ASH_info "ash.common" "Updating from $ASH_HOME"
+
+    if [[ ! $ASH_HOME == /* ]]; then
+        git reset --hard origin
+        git pull origin main --force
+        git pull origin main
+    else
+        rm -rf $ASH_ROOT
+        cp -r $ASH_HOME $ASH_ROOT
+    fi
+
+    cd $old_path
+}

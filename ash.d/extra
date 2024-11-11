@@ -1,7 +1,7 @@
 function _ash_extra_help {
-    echo "Usage:  ash extra [OPTIONS] COMMAND"
+    echo "Usage:  ash extra COMMAND"
     echo ""
-    echo "Install AnoSH extras"
+    echo "Manage ASH extras"
     echo ""
     echo "Commands:"
     echo "  help.......................shows this message"
@@ -12,12 +12,16 @@ function _ash_extra_help {
     echo ""
 }
 
+source $ASH_ROOT/ash.d/extra.d/install
+source $ASH_ROOT/ash.d/extra.d/list
+source $ASH_ROOT/ash.d/extra.d/uninstall
+source $ASH_ROOT/ash.d/extra.d/update
+
+
 if [[ $# -eq 0 ]]; then
     _ash_extra_help
     return
 fi
-
-source "${_ANOSH_PATH_COMMON}/ash.d/extra.d/main"
 
 ASH_CMD=$1
 shift

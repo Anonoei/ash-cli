@@ -1,12 +1,3 @@
-# --- Include guard
-if [[ ${__ash_config-} == true ]]; then
-    false
-else
-# --- Include guard
-__ash_config=true
-
-source "${_ANOSH_PATH_COMMON}/ash.d/config.d/show"
-
 function _ash_config_help {
     echo "Usage:  ash config COMMAND"
     echo ""
@@ -17,35 +8,14 @@ function _ash_config_help {
     echo "  print......................prints current config"
     echo "  edit.......................opens editor on config"
     echo "  reset......................resets config to default"
-    echo "  show.......................show various variables"
+    echo "  vars.......................show ASH variables"
     echo ""
 }
 
-function _ash_config {
-    ASH_CMD=$1
-    shift
-    case $ASH_CMD in
-        help|-h|--help)
-            _ash_config_help $*
-            ;;
-        print)
-            cat $ANOSH_CONFIG/ano.sh
-            ;;
-        edit)
-            vi $ANOSH_CONFIG/ano.sh
-            ;;
-        reset)
-            _ash_config_reset $*
-            ;;
-        show)
-            _ash_config_show $*
-            ;;
-        *)
-            echo "Unknown ash config syntax: ash config $ASH_CMD $*"
-            echo "Run 'ash config help' for more information"
-            ;;
-    esac
-}
+if [[ $# -eq 0 ]]; then
+    _ash_config_help
+    return
+fi
 
 function _ash_config_reset {
     rm $ANOSH_CONFIG/ano.sh
@@ -53,4 +23,36 @@ function _ash_config_reset {
     exec $ASH_SHELL
 }
 
-fi # --- Include guard
+function _ash_config_vars {
+    echo "ASH_VERSION........$ANOSH_VERSION"
+    echo "ANOSH_ROOT.........$ANOSH_ROOT"
+    echo "ANOSH_INST.........$ANOSH_INST"
+    echo "ANOSH_HOME.........$ANOSH_HOME"
+    echo "ANOSH_DOWN.........$ANOSH_DOWN"
+    echo "ANOSH_DISTRO.......$ANOSH_DISTRO"
+    echo "ANOSH_PKGMAN.......$ANOSH_PKGMAN"
+}
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_config_help $*
+        ;;
+    print)
+        cat $ANOSH_CONFIG/ano.sh
+        ;;
+    edit)
+        vi $ANOSH_CONFIG/ano.sh
+        ;;
+    reset)
+        _ash_config_reset $*
+        ;;
+    vars)
+        _ash_config_vars $*
+        ;;
+    *)
+        echo "Unknown ash config syntax: ash config $ASH_CMD $*"
+        echo "Run 'ash config help' for more information"
+        ;;
+esac

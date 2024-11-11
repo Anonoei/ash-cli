@@ -128,12 +128,10 @@ function _ash_escape {
     retr_cmd=""
 
     if [[ ! ${#ESC_STYLE[@]} -eq 0 ]]; then
-        i=1
-        while [[ $i -lt ${#ESC_STYLE[@]} ]]; do
-            retr_cmd="${retr_cmd}${ESC_STYLE[$i-1]};"
-            ((i++))
+        for style in ${ESC_STYLE[@]}; do
+            retr_cmd="${retr_cmd}${style};"
         done
-        retr_cmd="${retr_cmd}${ESC_STYLE[$i-1]}"
+        retr_cmd="${retr_cmd:0:-1}"
     fi
 
     if [[ ! ${#ESC_COLOR[@]} -eq 0 ]]; then
@@ -144,12 +142,13 @@ function _ash_escape {
             col_pos="${col:0:1}"
             col_id="${col:1:1}"
 
-            if [[ "$col_pos"=="f" ]]; then
-                retr_cmd="${retr_cmd}3$col_id"
-            elif [[ "$col_pos"=="b" ]]; then
-                retr_cmd="${retr_cmd}4$col_id"
+            if [[ "$col_pos" == "f" ]]; then
+                retr_cmd="${retr_cmd}3${col_id};"
+            elif [[ "$col_pos" == "b" ]]; then
+                retr_cmd="${retr_cmd}4${col_id};"
             fi
         done
+        retr_cmd=${retr_cmd:0:-1}
     fi
 
     #echo "  retr_cmd: $retr_cmd"

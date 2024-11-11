@@ -1,0 +1,3 @@
+function _ash_extra_install {
+    echo "Install"
+}

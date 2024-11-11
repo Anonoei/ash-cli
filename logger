@@ -169,7 +169,7 @@ function __ash_log_trace {
     __ash_log "$1" "$2" "TRACE" "$3"
 }
 
-function __ash_log_info {
+function __ash_log_debug {
     # $1 = parent
     # $2 = unit
     # $3 = message
@@ -198,10 +198,8 @@ function __ash_log_error {
 }
 
 
-eval "export ASH_LOGGER_${LOCAL_TITLE}_LEVEL=$(ash_logger_level $ARG_LEVEL)"
-eval "export ASH_LOGGER_${LOCAL_TITLE}_FILE=$ARG_FILE"
-
-eval "someprefix_${bname}() { echo test; }"
+eval "ASH_LOGGER_${LOCAL_TITLE}_LEVEL=$(ash_logger_level $ARG_LEVEL)"
+eval "ASH_LOGGER_${LOCAL_TITLE}_FILE=$ARG_FILE"
 
 eval "${LOCAL_TITLE}_trace() { __ash_log_trace \"${LOCAL_TITLE}\" \"\$1\" \"\$2\"; }"
 eval "${LOCAL_TITLE}_debug() { __ash_log_debug \"${LOCAL_TITLE}\" \"\$1\" \"\$2\"; }"

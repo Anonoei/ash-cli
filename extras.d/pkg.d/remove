@@ -1,0 +1,14 @@
+case $ASH_PKGMAN in
+    yum|dnf)
+        sudo $ASH_PKGMAN remove $*
+        ;;
+    apt)
+        sudo $ASH_PKGMAN remove $*
+        ;;
+    pacman)
+        sudo $ASH_PKGMAN -Rs $*
+        ;;
+    *)
+        echo "Unknown package manager: $ASH_PKGMAN"
+        ;;
+esac

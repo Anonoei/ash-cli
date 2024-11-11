@@ -1,0 +1,38 @@
+function _ash_pkg_help {
+    echo "Usage:  ash pkg [OPTIONS] COMMAND"
+    echo ""
+    echo "Package management helper"
+    echo ""
+    echo "Commands:"
+    echo "  help.......................show this message"
+    echo "  install....................install a package"
+    echo "  remove.....................remove a package"
+    echo "  update.....................update packages"
+    echo ""
+}
+
+if [[ -z "$ASH_PKGMAN" ]]; then
+    ASH_PKGMAN=$(sh $_ANOSH_PATH_COMMON/scripts/pkgman)
+fi
+
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_pkg_help $*
+        ;;
+    install)
+        _ash_pkg_install $*
+        ;;
+    remove)
+        _ash_pkg_remove $*
+        ;;
+    update)
+        _ash_pkg_update $*
+        ;;
+    *)
+        echo "Unknown ash pkg syntax: ash pkg $ASH_CMD $*"
+        echo "Run 'ash pkg help' for more information"
+        ;;
+esac
