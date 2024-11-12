@@ -1,3 +1,52 @@
+function _ash_extra_install_help {
+    echo ""
+    echo "ASH extra:"
+    echo "  folder/"
+    echo "    main"
+    echo "    extra.name - name of the extra"
+    echo "    extra.desc - brief description"
+    echo ""
+    echo "main follows the same structure as ash/ash.d/main"
+    echo ""
+}
+
 function _ash_extra_install {
-    echo "Install"
+    # $1 = path extra is at
+    local extra_path="$1"
+    if [[ ! -f "${extra_path}/main" ]]; then
+        echo "Extra is missing main!"
+        _ash_extra_install_help
+        return
+    elif [[ ! -f "${extra_path}/extra.name" ]]; then
+        echo "Extra is missing extra.name!"
+        _ash_extra_install_help
+        return
+    elif [[ ! -f "${extra_path}/extra.desc" ]]; then
+        echo "Extra is missing extra.desc!"
+        _ash_extra_install_help
+        return
+    fi
+
+    local extra_name=$(cat ${extra_path}/extra.name)
+    if [[ $extra_name == */* ]]; then
+        local extra_dir=$(dirname "$extra_name")
+        mkdir -p "${ASH_CONFIG}/plugins/${extra_dir}"
+    fi
+
+    #echo "Linking '$extra_path' to '$ASH_CONFIG/plugins/$extra_name'"
+
+    if [[ ! -d "${ASH_CONFIG}/plugins/${extra_name}" ]]; then
+        ln -s "${extra_path}" "${ASH_CONFIG}/plugins/${extra_name}"
+    fi
+
+    if [[ ! -f "$ASH_CONFIG/ash.plugs" ]]; then
+        touch "$ASH_CONFIG/ash.plugs"
+    fi
+
+    if ! grep -q "^${extra_name}" "$ASH_CONFIG/ash.plugs"; then
+        echo "$extra_name" >> "$ASH_CONFIG/ash.plugs"
+        echo "Added extra '$extra_name'"
+    else
+        echo "Extra '$extra_name' is already installed!"
+    fi
 }

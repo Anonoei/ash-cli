@@ -1,3 +1,9 @@
 function _ash_extra_uninstall {
-    echo "Uninstall"
+    local extra_name="$1"
+    if grep -q "^${extra_name}" "$ASH_CONFIG/ash.plugs"; then
+        sed -i "\,${extra_name},d" "$ASH_CONFIG/ash.plugs"
+        echo "Removed extra '$extra_name'"
+    else
+        echo "Extra '$extra_name' is not installed!"
+    fi
 }

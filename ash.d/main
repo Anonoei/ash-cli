@@ -57,7 +57,6 @@ case $ASH_CMD in
         source $ASH_ROOT/ash.d/log $*
         ;;
     *)
-        echo "Unknown ash syntax: ash $ASH_CMD $*"
-        echo "Run 'ash help' for more information"
+        _ash_fmt_help_unk "ash" $ASH_CMD $*
         ;;
 esac

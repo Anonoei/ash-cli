@@ -12,7 +12,33 @@ function _ash_extra_help {
         "uninstall;uninstall_an_extra"
     )
     _ash_fmt_help_items "${commands[@]}"
+    _ash_extra_help_plugs
+}
+
+function _ash_extra_help_plugs {
     echo ""
+    echo "Extras:"
+    extras=()
+    while read -r line; do
+        local extra_name="$line"
+        if [[ -d "$ASH_CONFIG/plugins/$extra_name" ]]; then
+            local extra_desc="$(cat "$ASH_CONFIG/plugins/$extra_name/extra.desc")"
+            local extra_desc=${extra_desc// /_}
+            local extra="${extra_name};${extra_desc}"
+            extras+=("$extra")
+        fi
+    done < "$ASH_CONFIG/ash.plugs"
+    _ash_fmt_help_items "${extras[@]}"
+}
+
+function _ash_extra_plugs {
+    local extra="$1"
+    shift
+    if ! grep -q "$extra" "$ASH_CONFIG/ash.plugs"; then
+        _ash_fmt_help_unk "ash extra $extra" $*
+        return
+    fi
+    source $ASH_CONFIG/plugins/$extra/main $*
 }
 
 source $ASH_ROOT/ash.d/extra.d/install
@@ -45,6 +71,6 @@ case $ASH_CMD in
         _ash_extra_uninstall $*
         ;;
     *)
-        _ash_fmt_help_unk "ash extra" $ASH_CMD $*
+        _ash_extra_plugs $ASH_CMD $*
         ;;
 esac
