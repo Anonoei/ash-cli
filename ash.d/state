@@ -28,13 +28,13 @@ function _ash_state_reset {
 }
 
 function _ash_state_vars {
-    echo "ASH_VERSION........$ANOSH_VERSION"
-    echo "ANOSH_ROOT.........$ANOSH_ROOT"
-    echo "ANOSH_INST.........$ANOSH_INST"
-    echo "ANOSH_HOME.........$ANOSH_HOME"
-    echo "ANOSH_DOWN.........$ANOSH_DOWN"
-    echo "ANOSH_DISTRO.......$ANOSH_DISTRO"
-    echo "ANOSH_PKGMAN.......$ANOSH_PKGMAN"
+    echo "ASH_VERSION........$ASH_VERSION"
+    echo "ASH_ROOT...........$ASH_ROOT"
+    echo "ASH_INST...........$ASH_INST"
+    echo "ASH_HOME...........$ASH_HOME"
+    echo "ASH_DOWN...........$ASH_DOWN"
+    echo "ASH_DISTRO.........$ASH_DISTRO"
+    echo "ASH_PKGMAN.........$ASH_PKGMAN"
 }
 
 function _ash_state_changelog {
@@ -76,10 +76,10 @@ case $ASH_CMD in
         _ash_state_help $*
         ;;
     config)
-        cat $ANOSH_CONFIG/ash.conf
+        cat $ASH_CONFIG/ash.conf
         ;;
     edit)
-        vi $ANOSH_CONFIG/ash.conf
+        vi $ASH_CONFIG/ash.conf
         ;;
     reset)
         _ash_state_reset $*

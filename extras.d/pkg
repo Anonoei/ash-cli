@@ -12,7 +12,7 @@ function _ash_pkg_help {
 }
 
 if [[ -z "$ASH_PKGMAN" ]]; then
-    ASH_PKGMAN=$(sh $_ANOSH_PATH_COMMON/scripts/pkgman)
+    ASH_PKGMAN=$(sh $_ASH_PATH_COMMON/scripts/pkgman)
 fi
 
 
