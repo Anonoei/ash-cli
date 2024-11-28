@@ -7,6 +7,7 @@ function _ash_state_help {
     commands=(
         "help;show_this_message"
         "config;prints_current_config"
+        "extra;prints_current_extra_config"
         "edit;open_editor_on_config"
         "reset;resets_config_to_default"
         "vars;show_ASH_variables"
@@ -77,6 +78,9 @@ case $ASH_CMD in
         ;;
     config)
         cat $ASH_CONFIG/ash.conf
+        ;;
+    extra)
+        cat $ASH_CONFIG/ash.plugs
         ;;
     edit)
         vi $ASH_CONFIG/ash.conf
