@@ -20,9 +20,10 @@ function _ash_fmt_help_items {
     local pad=$(printf '%0.2s' "._"{1..20})
 
     for item in ${arr[@]}; do
-        local item=(${item//\;/ })
-        local comm=${item[0]}
-        local desc=${item[1]}
+        local comm=$(echo "$item" | cut -d';' -f1)
+        local desc=$(echo "$item" | cut -d';' -f2)
+
+        ASH_trace "fmt.help_items" "Found item $comm - $desc"
 
         local msg="$(printf '%s' "$comm")${pad:${#comm}}$(printf '%s\n' "$desc")"
         local msg=${msg//_/ }
