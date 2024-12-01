@@ -15,7 +15,7 @@ function _ash_pkg_help {
 }
 
 if [[ -z "$ASH_PKGMAN" ]]; then
-    ASH_PKGMAN=$(sh $ASH_ROOT/extras.d/pkg.d/pkgman)
+    ASH_PKGMAN=$(bash $ASH_ROOT/extras.d/pkg.d/pkgman)
 fi
 
 if [[ $# -eq 0 ]]; then
