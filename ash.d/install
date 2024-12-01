@@ -28,9 +28,9 @@ function _ash_update {
     ASH_info "ash.common" "Updating from $ASH_HOME"
 
     if [[ ! $ASH_HOME == /* ]]; then
-        git reset --hard origin
-        git pull origin main --force
-        git pull origin main
+        if [[ -z $(git fetch --dry-run) ]]; then
+            git pull origin main
+        fi
     else
         rm -rf $ASH_ROOT
         cp -r $ASH_HOME $ASH_ROOT
