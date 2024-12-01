@@ -4,7 +4,7 @@ function _ash_state_help {
     echo "Configuration helper"
     echo ""
     echo "Commands:"
-    commands=(
+    local ash_arg=(
         "help;show_this_message"
         "config;prints_current_config"
         "extra;prints_current_extra_config"
@@ -13,7 +13,7 @@ function _ash_state_help {
         "vars;show_ASH_variables"
         "changelog;show_ASH_changelog"
     )
-    _ash_fmt_help_items "${commands[@]}"
+    _ash_fmt_help_items "${ash_arg[@]}"
     echo ""
 }
 
@@ -69,6 +69,8 @@ print("\n".join([item["commit"]["author"]["date"] + ";" + item["commit"]["messag
         ((count++))
     done <<< "$parsed"
 }
+
+ASH_trace "state" "Start"
 
 ASH_CMD=$1
 shift

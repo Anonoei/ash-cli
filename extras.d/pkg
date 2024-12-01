@@ -12,7 +12,7 @@ function _ash_pkg_help {
 }
 
 if [[ -z "$ASH_PKGMAN" ]]; then
-    ASH_PKGMAN=$(sh $_ASH_PATH_COMMON/scripts/pkgman)
+    ASH_PKGMAN=$(sh $ASH_ROOT/extras.d/pkg.d/pkgman)
 fi
 
 
@@ -22,17 +22,16 @@ case $ASH_CMD in
     help|-h|--help)
         _ash_pkg_help $*
         ;;
-    install)
-        _ash_pkg_install $*
+    i|install)
+        source $ASH_ROOT/extras.d/pkg.d/install $*
         ;;
-    remove)
-        _ash_pkg_remove $*
+    r|remove)
+        source $ASH_ROOT/extras.d/pkg.d/remove $*
         ;;
-    update)
-        _ash_pkg_update $*
+    u|update)
+        source $ASH_ROOT/extras.d/pkg.d/update $*
         ;;
     *)
-        echo "Unknown ash pkg syntax: ash pkg $ASH_CMD $*"
-        echo "Run 'ash pkg help' for more information"
+        _ash_pkg_help
         ;;
 esac

@@ -33,10 +33,13 @@ fi
 mkdir -p $ASH_CONFIG/plugins
 
 source $ASH_ROOT/ash.d/escape
-source $ASH_ROOT/logger "ASH" -l "TRACE"
+source $ASH_ROOT/logger "ASH" -l "INFO"
+
 
 source $ASH_ROOT/ash.d/fmt
 source $ASH_ROOT/ash.d/install
+
+ASH_trace "a.sh" "Initialized!"
 
 function ash {
     source $ASH_ROOT/ash.d/main $*

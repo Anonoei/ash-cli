@@ -6,7 +6,7 @@ function _ash_help {
     echo ""
     echo "Commands:"
     echo " ASH:"
-    commands=(
+    local ash_arg=(
         "h|help;show_this_message"
         "R|reinstall;reinstall_ASH"
         "U|uninstall;uninstall_ASH"
@@ -16,7 +16,7 @@ function _ash_help {
         "e|escape;ANSI_escape_helper"
         "__log;ASH_logger"
         )
-    _ash_fmt_help_items "${commands[@]}"
+    _ash_fmt_help_items "${ash_arg[@]}"
     echo ""
     echo "Run 'ash COMMAND help' for more information on a command"
 }
@@ -25,6 +25,8 @@ if [[ $# -eq 0 ]]; then
     _ash_help
     return
 fi
+
+ASH_trace "main" "Start"
 
 ASH_CMD=$1
 shift

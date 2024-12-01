@@ -4,11 +4,11 @@ function _ash_log_help {
     echo "ASH logger helper"
     echo ""
     echo "Commands:"
-    commands=(
+    local ash_arg=(
         "help;show_this_message"
         "new;create_a_new_logger"
     )
-    _ash_fmt_help_items "${commands[@]}"
+    _ash_fmt_help_items "${ash_arg[@]}"
     echo ""
 }
 

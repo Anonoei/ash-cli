@@ -4,13 +4,13 @@ function _ash_escape_help {
     echo "ANSI escape helper"
     echo ""
     echo "Options:"
-    commands=(
+    local ash_arg=(
         "-h|--help;show_this_message"
         "-r|--reset;reset_style_and_color"
         "-s|--style_<style>;set_ANSI_style"
         "-c|--color_<color>;set_ANSI_color"
     )
-    _ash_fmt_help_items "${commands[@]}"
+    _ash_fmt_help_items "${ash_arg[@]}"
     echo ""
     echo " <style> is (reset bold dim...)"
     echo " <color> is <pos><name>"

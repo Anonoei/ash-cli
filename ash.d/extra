@@ -4,14 +4,14 @@ function _ash_extra_help {
     echo "Manage ASH extras"
     echo ""
     echo "Commands:"
-    commands=(
+    local ash_arg=(
         "help;show_this_message"
         "list;lists_available_extras"
         "update;updates_installed_extras"
         "install;install_an_extra"
         "uninstall;uninstall_an_extra"
     )
-    _ash_fmt_help_items "${commands[@]}"
+    _ash_fmt_help_items "${ash_arg[@]}"
     _ash_extra_help_plugs
 }
 
@@ -34,7 +34,10 @@ function _ash_extra_help_plugs {
 function _ash_extra_plugs {
     local extra="$1"
     shift
-    if ! grep -q "$extra" "$ASH_CONFIG/ash.plugs"; then
+    if [[ "$extra" == "pkg" ]]; then
+        source $ASH_ROOT/extras.d/pkg $*
+        return
+    elif ! grep -q "$extra" "$ASH_CONFIG/ash.plugs"; then
         _ash_fmt_help_unk "ash extra $extra" $*
         return
     fi
@@ -46,6 +49,7 @@ source $ASH_ROOT/ash.d/extra.d/list
 source $ASH_ROOT/ash.d/extra.d/uninstall
 source $ASH_ROOT/ash.d/extra.d/update
 
+ASH_trace "extra" "Start"
 
 if [[ $# -eq 0 ]]; then
     _ash_extra_help
