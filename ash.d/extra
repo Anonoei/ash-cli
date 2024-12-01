@@ -16,6 +16,9 @@ function _ash_extra_help {
 }
 
 function _ash_extra_help_plugs {
+    if [[ ! -f "$ASH_CONFIG/ash.plugs" ]]; then
+        return
+    fi
     echo ""
     echo "Extras:"
     extras=()

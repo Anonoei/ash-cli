@@ -12,6 +12,11 @@ function _ash_extra_install_help {
 
 function _ash_extra_install {
     # $1 = path extra is at
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify the path to install the extra"
+        return
+    fi
+
     local extra_path="$1"
     if [[ ! -f "${extra_path}/main" ]]; then
         echo "Extra is missing main!"
