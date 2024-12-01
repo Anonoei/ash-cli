@@ -28,8 +28,8 @@ function _ash_update {
     ASH_info "ash.common" "Updating from $ASH_HOME"
 
     if [[ ! $ASH_HOME == /* ]]; then
-        if [[ -z $(git fetch --dry-run) ]]; then
-            git pull origin main
+        if [[ ! -z $(git fetch --dry-run) ]]; then
+            git pull
         fi
     else
         rm -rf $ASH_ROOT
