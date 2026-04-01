@@ -1,75 +1,78 @@
 # ASH CLI installer
 # (C) Anonoei, Licenced under the MIT license
 
-ASH_SRC="https://github.com/anonoei/ash-cli"
-ASH_ROOT="${HOME}/.local/ash"
-ASH_CONFIG="${HOME}/.config/ash"
+AINST_SRC="https://github.com/anonoei/ash-cli"
+AINST_ROOT="${HOME}/.local/ash"
+AINST_CONFIG="${HOME}/.config/ash"
 # ---------------------- #
 
-ARG_FORCE=0
-ARG_DIR=
+ARG_REMOVE=0
 
-function show_help {
+function _show_help {
     echo "ASH installer"
     echo ""
     echo "Arguments:"
     echo "  -h|--help..................show this message"
-    echo "  -f|--force.................overwrite settings if they exist"
-    echo "  -d|--dir...................install to this directory"
+    echo "  -c|--config................delete ash/config"
 }
 
-function parse_args {
+function _parse_args {
     if [[ $# -eq 0 ]]; then
         return
     fi
-    ASH_ARG=$1
+    AINST_ARG=$1
     shift
-    case $ASH_ARG in
+    case $AINST_ARG in
         -h|--help)
-            show_help
+            _show_help
             exit 0
             ;;
-        -f|--force)
-            ARG_FORCE=1
-            ;;
-        -d|--dir)
-            ARG_DIR=$1
-            shift
+        -c|--config)
+            ARG_REMOVE=1
             ;;
         *)
-            echo "Unknown argument! $1"
+            echo "Unknown argument! $AINST_ARG"
             exit 1
             ;;
     esac
+    _parse_args $*
 }
 
-parse_args $*
+function ash_remove_config {
+    rm -rf $AINST_CONFIG
+}
 
-if [[ $ARG_FORCE -eq 1 ]]; then
-    echo "Removing $ASH_CONFIG"
-    rm -rf $ASH_CONFIG
+function ash_pre {
+    [[ -d "${AINST_ROOT}" ]] && rm -rf "${AINST_ROOT}"
+    mkdir -p $AINST_CONFIG/plugins
+}
+
+function ash_post {
+    if [[ ! -f "$AINST_CONFIG/ash.conf" ]]; then
+        echo "Copying default configuration..."
+        cp $AINST_ROOT/ash.conf.defaults $AINST_CONFIG/ash.conf
+    fi
+}
+
+if [ "${BASH_SOURCE[0]}" -ef "$0" ]
+then
+    _parse_args $*
+
+    if [[ $ARG_REMOVE -eq 1 ]]; then
+        echo "Removing $AINST_CONFIG"
+        ash_remove_config
+    fi
+
+    ash_pre
+    echo "Cloning ASH..."
+    git clone $AINST_SRC "$AINST_ROOT"
+    ash_post
+
+    echo ""
+    echo "ASH is installed!"
+    echo ""
+    echo "To add ASH to your shell please add the following to your RC file:"
+    echo ""
+    echo "source $AINST_ROOT/a.sh"
+    echo ""
 fi
-
-if [[ ! -z $ARG_DIR ]]; then
-    echo "Setting ASH_ROOT to $ARG_DIR"
-    ASH_ROOT=$ARG_DIR
-fi
-
-mkdir -p $ASH_ROOT
-mkdir -p $ASH_CONFIG/plugins
-
-echo "Cloning ASH..."
-git clone $ASH_SRC "$ASH_ROOT"
-
-if [[ ! -f "$ASH_CONFIG/ash.conf" ]]; then
-    echo "Copying default configuration..."
-    cp $ASH_ROOT/ash.conf.defaults $ASH_CONFIG/ash.conf
-fi
-
-echo ""
-echo "ASH is installed!"
-echo ""
-echo "To add ASH to your shell please add the following to your RC file:"
-echo ""
-echo "source $ASH_ROOT/a.sh"
-echo ""

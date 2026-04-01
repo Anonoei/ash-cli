@@ -1,6 +1,10 @@
 #!/bin/bash
 # ASH CLI
 
+if [[ ! -z $ASH_VERSION ]]; then
+    return
+fi
+
 ASH_VERSION="0.3.5"
 ASH_CONFIG="${HOME}/.config/ash"
 ASH_EXTRAS=()
@@ -38,6 +42,8 @@ source $ASH_ROOT/logger "ASH" -l "INFO"
 
 source $ASH_ROOT/ash.d/fmt
 source $ASH_ROOT/ash.d/install
+
+ASH_PKGMAN=$(bash $ASH_ROOT/extras.d/pkg.d/pkgman)
 
 ASH_trace "a.sh" "Initialized!"
 

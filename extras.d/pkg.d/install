@@ -1,3 +1,5 @@
+echo "ash extra pkg attempting to install: $*"
+
 case $ASH_PKGMAN in
     yum|dnf)
         sudo $ASH_PKGMAN install $*
@@ -6,7 +8,7 @@ case $ASH_PKGMAN in
         sudo $ASH_PKGMAN install $*
         ;;
     pacman)
-        sudo $ASH_PKGMAN -Syu $*
+        sudo $ASH_PKGMAN -Sy --needed $*
         ;;
     brew)
         sudo $ASH_PKGMAN install $*
