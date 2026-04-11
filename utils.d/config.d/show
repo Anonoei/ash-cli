@@ -1,0 +1,29 @@
+local prefix=ASH_CONFIG_
+local vars=($(compgen -v "$prefix"))
+local names=()
+
+echo "CONFIG_DEFAULT: ${ASH_CONFIG_DEFAULT}"
+
+for var in "${vars[@]}"; do
+    local inst_name=$(cut -d'_' -f3 <<<"$var")
+    if [[ "$inst_name" == "DEFAULT" ]]; then
+        continue
+    fi
+    if [[ ! ${names[@]} =~ "$inst_name" ]]; then
+        names+=("$inst_name")
+
+        local config_file=$(eval "echo \$ASH_CONFIG_${inst_name}_FILE")
+        local config_file=$(eval "echo $config_file")
+        if [[ -z $config_file ]]; then
+            config_file="None"
+        fi
+
+        local config_default=$(eval "echo \$ASH_CONFIG_${inst_name}_DEFAULT")
+        local config_default=$(eval "echo $config_default")
+        if [[ -z $config_default ]]; then
+            config_default="None"
+        fi
+
+        echo "  Config ${inst_name}: ${config_file} (default: ${config_default})"
+    fi
+done

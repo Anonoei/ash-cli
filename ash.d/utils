@@ -1,0 +1,65 @@
+function _ash_utils_help {
+    echo "Usage:  ash utils COMMAND"
+    echo ""
+    echo "ASH utils helper"
+    echo ""
+    echo "Commands:"
+    local ash_arg=(
+        "help;show_this_message"
+        "ls;list_ASH_utils"
+        "log;ASH_log"
+        "config;ASH_config"
+        "new;create_new_util_instance"
+    )
+    _ash_fmt_help_items "${ash_arg[@]}"
+    echo ""
+}
+
+function _ash_utils_new {
+    ASH_CMD=$1
+    shift
+    case $ASH_CMD in
+        log)
+            source $ASH_ROOT/utils.d/log new $*
+            ;;
+        config)
+            source $ASH_ROOT/utils.d/config new $*
+            ;;
+        *)
+            _ash_fmt_help_unk "ash new" $ASH_CMD $*
+            ;;
+    esac
+}
+
+if [[ $# -eq 0 ]]; then
+    _ash_utils_help
+    return
+fi
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_utils_help $*
+        ;;
+    ls)
+        for entry in "$ASH_ROOT/utils.d"/*
+        do
+            if [ -f $entry ]; then
+                echo "$(basename "$entry")"
+            fi
+        done
+        ;;
+    log)
+        source $ASH_ROOT/utils.d/log $*
+        ;;
+    config)
+        source $ASH_ROOT/utils.d/config $*
+        ;;
+    new)
+        _ash_utils_new $*
+        ;;
+    *)
+        _ash_fmt_help_unk "ash utils" $ASH_CMD $*
+        ;;
+esac

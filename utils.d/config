@@ -1,0 +1,38 @@
+function _ash_utils_config_help {
+    echo "Usage:  ash utils config COMMAND"
+    echo ""
+    echo "ASH utils config"
+    echo ""
+    echo "Commands:"
+    local ash_arg=(
+        "help;show_this_message"
+        "new;create_a_new_config"
+        "show;show_existing_configs"
+    )
+    _ash_fmt_help_items "${ash_arg[@]}"
+    echo ""
+}
+
+if [[ "$1" == "import" ]]; then
+    return
+elif  [[ $# -eq 0 ]]; then
+    _ash_utils_config_help
+    return
+fi
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_utils_config_help $*
+        ;;
+    new)
+        source $ASH_ROOT/utils.d/config.d/create $*
+        ;;
+    show)
+        source $ASH_ROOT/utils.d/config.d/show $*
+        ;;
+    *)
+        _ash_fmt_help_unk "ash utils config" $ASH_CMD $*
+        ;;
+esac

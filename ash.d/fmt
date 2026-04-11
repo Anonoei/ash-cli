@@ -1,5 +1,5 @@
 function _ash_fmt_banner {
-    echo -ne "$(_ash_escape -s bold -c bblack -c fred)"
+    echo -ne "$(_ash_escape -s bold -c fred)"
     echo '    ___  _____ __  __'
     echo '   /   |/ ___// / / /'
     echo '  / /| |\__ \/ /_/ / '

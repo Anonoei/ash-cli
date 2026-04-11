@@ -1,5 +1,5 @@
 function _ash_reinstall {
-    ASH_info "ash.reinstall" "Reinstalling from $ASH_DOWN/install"
+    ASH_info "ash.install" "Reinstalling from $ASH_DOWN/install"
 
     if [[ ! $ASH_DOWN == /* ]]; then
         $SHELL <(curl -sS "$ASH_DOWN/install")
@@ -9,9 +9,9 @@ function _ash_reinstall {
 }
 
 function _ash_uninstall {
-    ASH_info "ash.uninstall" "Uninstalling..."
+    ASH_info "ash.install" "Uninstalling..."
 
-    ASH_warn "ash.uninstall" "Deleting $ASH_ROOT"
+    ASH_warn "ash.install" "Deleting $ASH_ROOT"
 
     rm -rf $ASH_ROOT
     ASH_info "ash.uninstall" "ASH has been uninstalled!"
@@ -25,7 +25,7 @@ function _ash_update {
     old_path=$PWD
     cd $ASH_ROOT
 
-    ASH_info "ash.common" "Updating from $ASH_HOME"
+    ASH_info "ash.install" "Updating from $ASH_HOME"
 
     if [[ ! $ASH_HOME == /* ]]; then
         if [[ ! -z $(git fetch --dry-run) ]]; then
@@ -37,4 +37,34 @@ function _ash_update {
     fi
 
     cd $old_path
+}
+
+function _ash_remote_version {
+    local remote=$(curl -sS https://raw.githubusercontent.com/Anonoei/ash-cli/refs/heads/main/a.sh | grep "ASH_VERSION" | tail -n 1)
+    local remote="$(echo "$remote" | cut -d'=' -f2)"
+    local remote="${remote:1:-1}"
+    echo "$remote"
+}
+
+function _ash_is_updated {
+    local remote=$(_ash_remote_version)
+
+    IFS='.' read -r l_major l_minor l_patch <<<"$ASH_VERSION"
+    IFS='.' read -r r_major r_minor r_patch <<<"$remote"
+
+    local is_updated=1
+
+    if [[ $r_major -gt $l_major ]]; then
+        update=0
+    elif [[ $r_major -eq $l_major ]]; then
+        if [[ $r_minor -gt $l_minor ]]; then
+            update=0
+        elif [[ $r_minor -eq $l_minor ]]; then
+            if [[ $r_patch -gt $l_patch ]]; then
+                update=0
+            fi
+        fi
+    fi
+
+    echo "$is_updated"
 }

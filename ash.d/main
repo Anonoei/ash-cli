@@ -14,7 +14,7 @@ function _ash_help {
         "s|state;ASH_configuration_helper"
         "x|extra;ASH_extras"
         "e|escape;ANSI_escape_helper"
-        "__log;ASH_logger"
+        "__utils;ASH_utils"
         )
     _ash_fmt_help_items "${ash_arg[@]}"
     echo ""
@@ -55,8 +55,21 @@ case $ASH_CMD in
     e|escape)
         _ash_escape $*
         ;;
-    log)
-        source $ASH_ROOT/ash.d/log $*
+    utils)
+        source $ASH_ROOT/ash.d/utils $*
+        ;;
+    new)
+        source $ASH_ROOT/ash.d/utils new $*
+        ;;
+    version)
+        if [[ "$1" == "remote" ]]; then
+            _ash_remote_version
+        else
+            echo "$ASH_VERSION"
+        fi
+        ;;
+    updated)
+        _ash_is_updated
         ;;
     *)
         _ash_fmt_help_unk "ash" $ASH_CMD $*

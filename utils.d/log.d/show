@@ -1,0 +1,26 @@
+local prefix=ASH_LOGGER_
+local vars=($(compgen -v "$prefix"))
+local names=()
+
+echo "LOG_LEVELS: ${ASH_LOGGER_NAMES[*]}"
+
+for var in "${vars[@]}"; do
+    local inst_name=$(cut -d'_' -f3 <<<"$var")
+    if [[ "$inst_name" == "LEVELS" ]] || [[ "$inst_name" == "NAMES" ]]; then
+        continue
+    fi
+    if [[ ! ${names[@]} =~ "$inst_name" ]]; then
+        names+=("$inst_name")
+
+        local log_level=$(eval "echo \$ASH_LOGGER_${inst_name}_LEVEL")
+        local log_level=$(eval "echo $log_level")
+
+        local log_file=$(eval "echo \$ASH_LOGGER_${inst_name}_FILE")
+        local log_file=$(eval "echo $log_file")
+        if [[ -z $log_file ]]; then
+            log_file="None"
+        fi
+
+        echo "  Logger ${inst_name}: $(_ash_utils_log_level_to_name $log_level) >> ${log_file}"
+    fi
+done

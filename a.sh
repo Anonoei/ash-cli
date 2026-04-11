@@ -5,45 +5,21 @@ if [[ ! -z $ASH_VERSION ]]; then
     return
 fi
 
-ASH_VERSION="0.3.5"
+ASH_VERSION="0.4.0"
 ASH_CONFIG="${HOME}/.config/ash"
 ASH_EXTRAS=()
 
-function ash_config_read {
-    (grep -E "^${2}=" -m 1 "${1}" 2>/dev/null || echo "VAR=__UNDEFINED__") | head -n 1 | cut -d '=' -f 2-;
-}
-
-function ash_config_get {
-    val="$(ash_config_read $ASH_CONFIG/ash.conf "${1}")";
-    if [ "${val}" = "__UNDEFINED__" ]; then
-        val="$(ash_config_read ash.conf.defaults "${1}")";
-    fi
-    printf -- "%s" "${val}";
-}
-
-ASH_ROOT="$(ash_config_get "PATH_ROOT" | sed 's/~/$HOME/g')"
-ASH_ROOT="$(eval echo $ASH_ROOT)"
-
-if [[ "$ASH_ROOT" == "__UNDEFINED__" ]] ; then
-    echo "Failed to get PATH_ROOT"
-    return
-fi
-
-if [[ ! -d "$ASH_ROOT" ]]; then
-    echo "Failed to find ASH src!"
-    return
-fi
-
-mkdir -p $ASH_CONFIG/plugins
+ASH_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 source $ASH_ROOT/ash.d/escape
-source $ASH_ROOT/logger "ASH" -l "INFO"
-
-
 source $ASH_ROOT/ash.d/fmt
 source $ASH_ROOT/ash.d/install
 
+source $ASH_ROOT/utils.d/config new "ASH" -f "$ASH_CONFIG/ash.conf" -d "$ASH_ROOT/ash.conf.defaults"
+source $ASH_ROOT/utils.d/log new "ASH" -l "INFO"
+
 ASH_PKGMAN=$(bash $ASH_ROOT/extras.d/pkg.d/pkgman)
+mkdir -p $ASH_CONFIG/plugins
 
 ASH_trace "a.sh" "Initialized!"
 

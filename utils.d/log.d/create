@@ -1,10 +1,18 @@
+if [ -z $ASH_LOGGER_NAMES ]; then
+    local UTILS_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && cd .. && pwd)"
+    echo "$UTILS_DIR"
+    source $UTILS_DIR/log import
+    shift
+    shift
+fi
+
 function _ash_logger_help {
     echo "ASH Logger"
     echo ""
     echo "An 'object-oriented' logger"
     echo ""
     echo "Usage:"
-    echo " source logger <name> [-l <level>] [-f <file>]"
+    echo " source logger <NAME> [-l <level>] [-f <file>]"
     echo ""
     echo "Arguments:"
     echo "  -h|--help..................shows this message"
@@ -12,15 +20,15 @@ function _ash_logger_help {
     echo "  -f|--file..................sets the file to log to"
     echo ""
     echo "Logging:"
-    echo "  <name>_trace <unit> <message>"
-    echo "  <name>_debug <unit> <message>"
-    echo "  <name>_info <unit> <message>"
-    echo "  <name>_warn <unit> <message>"
-    echo "  <name>_error <unit> <message>"
+    echo "  <NAME>_trace <UNIT> <MESSAGE>"
+    echo "  <NAME>_debug <UNIT> <MESSAGE>"
+    echo "  <NAME>_info <UNIT> <MESSAGE>"
+    echo "  <NAME>_warn <UNIT> <MESSAGE>"
+    echo "  <NAME>_error <UNIT> <MESSAGE>"
     echo " Where:"
-    echo "    <name> is the name when the logger was sourced"
-    echo "    <unit> is the file/unit logging"
-    echo "    <message> is the message to log"
+    echo "    <NAME> is the name when the logger was created"
+    echo "    <UNIT> is the file/unit logging (sub-name)"
+    echo "    <MESSAGE> is the message to log"
     echo ""
     echo "Example usage:"
     echo '```file.sh'
@@ -75,70 +83,52 @@ _ash_logger_parse $*
 
 # --- Main module --- #
 
-ASH_LOGGER_NAMES=("TRACE" "DEBUG" "INFO" "WARN" "ERROR")
-ASH_LOGGER_LEVELS=(5 4 3 2 1)
-
-function ash_logger_level {
-    # $1 = name
-    if [[ ! ${ASH_LOGGER_NAMES[@]} =~ "$1" ]]; then
-        echo 99
-        return
-    fi
-
-    for ((i=0; $i<${#ASH_LOGGER_NAMES[@]}; i++)); do
-        if [[ "${ASH_LOGGER_NAMES[$i]}" == "$1" ]]; then
-            echo "${ASH_LOGGER_LEVELS[$i]}"
-            return
-        fi
-    done
-}
-
 function __ash_log {
-    # $1 parent
-    # $2 unit
-    # $3 level
-    # $4 message
+    # $1 NAME
+    # $2 UNIT
+    # $3 LEVEL
+    # $4 MESSAGE
     if [[ ! $# -eq 4 ]]; then
         echo "Invalid log argument count!"
         echo "Arguments: $*"
         return
     fi
-    local log_parent="$1"
-    local log_unit="$2"
-    local log_level="$3"
-    local log_msg="$4"
+    local arg_inst="$1"
+    local arg_unit="$2"
+    local arg_level="$3"
+    local arg_msg="$4"
 
-    local log_number=$(ash_logger_level $log_level)
+    local log_number=$(_ash_utils_log_level_from_name $arg_level)
 
-    local parent_level=$(eval "echo \$ASH_LOGGER_${log_parent}_LEVEL")
-    local parent_level=$(eval "echo $parent_level")
+    local inst_level=$(eval "echo \$ASH_LOGGER_${arg_inst}_LEVEL")
+    local inst_level=$(eval "echo $inst_level")
 
-    local parent_file=$(eval "echo \$ASH_LOGGER_${log_parent}_FILE")
-    local parent_file=$(eval "echo $parent_file")
+    local inst_file=$(eval "echo \$ASH_LOGGER_${arg_inst}_FILE")
+    local inst_file=$(eval "echo $inst_file")
 
     local log_date="$(date +"%Y-%m-%d_%H%M%S")"
-    if [[ ! -z $log_parent ]]; then
-        log_unit="$log_parent.$log_unit"
+    if [[ ! -z $arg_inst ]]; then
+        arg_unit="$arg_inst.$arg_unit"
     fi
-    local log_header="$log_date $log_unit <$log_level>"
+    local log_header="$log_date $arg_unit <$arg_level>"
 
-    if [[ ! -z $parent_file ]]; then
-        echo "${log_header}: $log_msg" >> $parent_file
+    if [[ ! -z $inst_file ]]; then
+        echo "${log_header}: $arg_msg" >> $inst_file
     fi
 
-    if [[ ! -z $parent_level ]] && [[ $log_number -gt $parent_level ]]; then
+    if [[ ! -z $inst_level ]] && [[ $log_number -gt $inst_level ]]; then
         return
     fi
 
     echo -ne "$(_ash_escape -s dim)"
     echo -ne "${log_date} "
     echo -ne "$(_ash_escape -s bold -c fcyan)"
-    echo -ne "${log_unit}"
+    echo -ne "${arg_unit}"
     echo -ne "$(_ash_escape -r)"
     echo -ne "$(_ash_escape -s dim)"
-    echo -ne " <${log_level}>: "
+    echo -ne " <${arg_level}>: "
     echo -ne "$(_ash_escape -r)"
-    case $log_level in
+    case $arg_level in
         TRACE)
             echo -ne "$(_ash_escape -s dim -c fblue)"
             ;;
@@ -157,48 +147,48 @@ function __ash_log {
         *)
             ;;
     esac
-    echo -ne "${log_msg}"
+    echo -ne "${arg_msg}"
     echo -ne "$(_ash_escape -r)"
     echo ""
 }
 
 function __ash_log_trace {
-    # $1 = parent
-    # $2 = unit
-    # $3 = message
+    # $1 = NAME
+    # $2 = UNIT
+    # $3 = MESSAGE
     __ash_log "$1" "$2" "TRACE" "$3"
 }
 
 function __ash_log_debug {
-    # $1 = parent
-    # $2 = unit
-    # $3 = message
+    # $1 = NAME
+    # $2 = UNIT
+    # $3 = MESSAGE
     __ash_log "$1" "$2" "DEBUG" "$3"
 }
 
 function __ash_log_info {
-    # $1 = parent
-    # $2 = unit
-    # $3 = message
+    # $1 = NAME
+    # $2 = UNIT
+    # $3 = MESSAGE
     __ash_log "$1" "$2" "INFO" "$3"
 }
 
 function __ash_log_warn {
-    # $1 = parent
-    # $2 = unit
-    # $3 = message
+    # $1 = NAME
+    # $2 = UNIT
+    # $3 = MESSAGE
     __ash_log "$1" "$2" "WARN" "$3"
 }
 
 function __ash_log_error {
-    # $1 = parent
-    # $2 = unit
-    # $3 = message
+    # $1 = NAME
+    # $2 = UNIT
+    # $3 = MESSAGE
     __ash_log "$1" "$2" "ERROR" "$3"
 }
 
 
-eval "ASH_LOGGER_${LOCAL_TITLE}_LEVEL=$(ash_logger_level $ARG_LEVEL)"
+eval "ASH_LOGGER_${LOCAL_TITLE}_LEVEL=$(_ash_utils_log_level_from_name $ARG_LEVEL)"
 eval "ASH_LOGGER_${LOCAL_TITLE}_FILE=$ARG_FILE"
 
 eval "${LOCAL_TITLE}_trace() { __ash_log_trace \"${LOCAL_TITLE}\" \"\$1\" \"\$2\"; }"

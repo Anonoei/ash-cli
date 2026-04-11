@@ -30,11 +30,8 @@ function _ash_state_reset {
 
 function _ash_state_vars {
     echo "ASH_VERSION........$ASH_VERSION"
-    echo "ASH_ROOT...........$ASH_ROOT"
-    echo "ASH_INST...........$ASH_INST"
-    echo "ASH_HOME...........$ASH_HOME"
-    echo "ASH_DOWN...........$ASH_DOWN"
-    echo "ASH_DISTRO.........$ASH_DISTRO"
+    echo "ASH_CONFIG.........$ASH_CONFIG"
+    echo "ASH_EXTRAS.........${ASH_EXTRAS[*]}"
     echo "ASH_PKGMAN.........$ASH_PKGMAN"
 }
 
@@ -79,6 +76,7 @@ case $ASH_CMD in
         _ash_state_help $*
         ;;
     config)
+        echo "> cat $ASH_CONFIG/ash.conf"
         cat $ASH_CONFIG/ash.conf
         ;;
     extra)

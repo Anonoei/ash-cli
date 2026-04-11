@@ -1,0 +1,162 @@
+function _ash_config_help {
+    echo "ASH Config"
+    echo ""
+    echo "An 'object-oriented' config"
+    echo ""
+    echo "Usage:"
+    echo " source config <NAME> -f <file> [-d <default file>]"
+    echo ""
+    echo "Arguments:"
+    echo "  -h|--help..................shows this message"
+    echo "  -f|--file..................sets the config file"
+    echo "  -d|--default...............sets the default config file"
+    echo ""
+    echo "Config:"
+    echo "  <NAME>_get <KEY>"
+    echo "  <NAME>_set <KEY> <VAL>"
+    echo " Where:"
+    echo "    <NAME> is the name when the config was created"
+    echo "    <KEY> is the key from the config"
+    echo "    <VAL> is the value to set <KEY> to"
+    echo ""
+    echo "Example usage:"
+    echo '```file.sh'
+    echo 'ash new config "TEST" -f "app.conf" -d "app.conf.default"'
+    echo 'TEST_get "EXAMPLE_KEY"'
+    echo '```'
+    echo " And it outputs ~ '<VAL>'"
+    echo ""
+}
+
+function _ash_config_parse {
+    if [[ $# -eq 0 ]]; then
+        return
+    fi
+    ARG=$1
+    shift
+    case $ARG in
+        -h|--help)
+            _ash_config_help
+            return
+            ;;
+        -f|--file)
+            ARG_FILE=$1
+            shift
+            ;;
+        -d|--default)
+            ARG_DEFAULT=$1
+            shift
+            ;;
+        *)
+            echo "Unknown argument $ARG!"
+            return
+            ;;
+    esac
+
+    _ash_config_parse $*
+}
+
+if [[ $# -eq 0 ]]; then
+    echo "A title must be provided when initializing a config!"
+    return
+fi
+
+LOCAL_TITLE=$1
+shift
+
+ARG_FILE=
+ARG_DEFAULT=
+
+_ash_config_parse $*
+
+
+# --- Main module --- #
+
+ASH_CONFIG_DEFAULT=__UNDEFINED__
+
+function __ash_config_read {
+    (grep -E "^${2}=" -m 1 "${1}" 2>/dev/null || echo "VAR=${ASH_CONFIG_DEFAULT}") | head -n 1 | cut -d '=' -f 2-;
+}
+
+function __ash_config_get {
+    # $1 NAME
+    # $2 KEY
+    if [[ ! $# -eq 2 ]]; then
+        echo "Invalid config argument count!"
+        echo "Arguments: $*"
+        return
+    fi
+    local arg_inst="$1"
+    local arg_key="$2"
+
+    local inst_file=$(eval "echo \$ASH_CONFIG_${arg_inst}_FILE")
+    local inst_file=$(eval "echo $inst_file")
+    local inst_default=$(eval "echo \$ASH_CONFIG_${arg_inst}_DEFAULT")
+    local inst_default=$(eval "echo $inst_default")
+
+    local val="$(__ash_config_read "$inst_file" "$arg_key")";
+    if [ "${val}" == "${ASH_CONFIG_DEFAULT}" ]; then
+        val="$(__ash_config_read "$inst_default" "$arg_key")";
+    fi
+    printf -- "%s" "${val}";
+}
+
+function __ash_config_set {
+    # $1 NAME
+    # $2 KEY
+    # $3 VAL
+    if [[ $# -lt 2 ]]; then
+        echo "Invalid config argument count!"
+        echo "Arguments ($#): $*"
+        return
+    fi
+    local arg_inst="$1"
+    local arg_key="$2"
+    local arg_val="$3"
+
+
+    local inst_file=$(eval "echo \$ASH_CONFIG_${arg_inst}_FILE")
+    local inst_file=$(eval "echo $inst_file")
+    local inst_default=$(eval "echo \$ASH_CONFIG_${arg_inst}_DEFAULT")
+    local inst_default=$(eval "echo $inst_default")
+
+    if [[ -z $arg_val ]]; then
+        local arg_val="$(__ash_config_read "$inst_default" "$arg_key")";
+        if [ "${arg_val}" == "${ASH_CONFIG_DEFAULT}" ]; then
+            echo "No default found to set $arg_key to!"
+            return
+        fi
+    fi
+
+    if grep -q "^${arg_key}=" "$inst_file"; then
+        sed -i "s/^${arg_key}=.*/${arg_key}=${arg_val}/" $inst_file
+    else
+        echo "${arg_key}=${arg_val}" >> $inst_file
+    fi
+}
+
+function __ash_config_del {
+    # $1 NAME
+    # $2 KEY
+    if [[ ! $# -eq 2 ]]; then
+        echo "Invalid config argument count!"
+        echo "Arguments: $*"
+        return
+    fi
+    local arg_inst="$1"
+    local arg_key="$2"
+
+    local inst_file=$(eval "echo \$ASH_CONFIG_${arg_inst}_FILE")
+    local inst_file=$(eval "echo $inst_file")
+    local inst_default=$(eval "echo \$ASH_CONFIG_${arg_inst}_DEFAULT")
+    local inst_default=$(eval "echo $inst_default")
+
+    sed -i "/^${arg_key}=/d" $inst_file
+}
+
+eval "ASH_CONFIG_${LOCAL_TITLE}_FILE=$ARG_FILE"
+eval "ASH_CONFIG_${LOCAL_TITLE}_DEFAULT=$ARG_DEFAULT"
+
+eval "${LOCAL_TITLE}_get() { __ash_config_get \"${LOCAL_TITLE}\" \"\$1\"; }"
+eval "${LOCAL_TITLE}_set() { __ash_config_set \"${LOCAL_TITLE}\" \"\$1\" \"\$2\"; }"
+eval "${LOCAL_TITLE}_del() { __ash_config_del \"${LOCAL_TITLE}\" \"\$1\"; }"
