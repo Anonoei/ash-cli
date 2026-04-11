@@ -4,14 +4,14 @@ function _ash_extra_help {
     echo "Manage ASH extras"
     echo ""
     echo "Commands:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "help;show_this_message"
-        "list;lists_available_extras"
-        "update;updates_installed_extras"
-        "install;install_an_extra"
-        "uninstall;uninstall_an_extra"
+        "ls;lists_available_extras"
+        "u|update;updates_installed_extras"
+        "i|install;install_an_extra"
+        "U|uninstall;uninstall_an_extra"
     )
-    _ash_fmt_help_items "${ash_arg[@]}"
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
     _ash_extra_help_plugs
 }
 
@@ -34,27 +34,45 @@ function _ash_extra_help_plugs {
     _ash_fmt_help_items "${extras[@]}"
 }
 
+function _ash_extra_is_installed {
+    local extra="$1"
+    shift
+    if ! grep -q "$extra" "$ASH_CONFIG/ash.plugs"; then
+        echo "0"
+    else
+        echo "1"
+    fi
+}
+
 function _ash_extra_plugs {
     local extra="$1"
     shift
     if [[ "$extra" == "pkg" ]]; then
         source $ASH_ROOT/extras.d/pkg $*
         return
-    elif ! grep -q "$extra" "$ASH_CONFIG/ash.plugs"; then
+    elif [[ "$(_ash_extra_is_installed $extra)" == "0" ]]; then
         _ash_fmt_help_unk "ash extra $extra" $*
         return
     fi
     source $ASH_CONFIG/plugins/$extra/main $*
 }
 
+function _ash_extra_list {
+    echo "ASH Extras:"
+    while read -r line; do
+        echo "  $line"
+    done < "$ASH_CONFIG/ash.plugs"
+}
+
 source $ASH_ROOT/ash.d/extra.d/install
-source $ASH_ROOT/ash.d/extra.d/list
 source $ASH_ROOT/ash.d/extra.d/uninstall
 source $ASH_ROOT/ash.d/extra.d/update
 
 ASH_trace "extra" "Start"
 
-if [[ $# -eq 0 ]]; then
+if [[ "$1" == "import" ]]; then
+    return
+elif [[ $# -eq 0 ]]; then
     _ash_extra_help
     return
 fi
@@ -65,17 +83,21 @@ case $ASH_CMD in
     help|-h|--help)
         _ash_extra_help $*
         ;;
-    list)
+    ls)
         _ash_extra_list $*
         ;;
-    update)
+    u|update)
         _ash_extra_update $*
         ;;
-    install)
+    i|install)
         _ash_extra_install $*
         ;;
-    uninstall)
+    U|uninstall)
         _ash_extra_uninstall $*
+        ;;
+    # Internal / not meant for CLI users
+    is_installed)
+        _ash_extra_is_installed $*
         ;;
     *)
         _ash_extra_plugs $ASH_CMD $*

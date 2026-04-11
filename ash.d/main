@@ -6,22 +6,22 @@ function _ash_help {
     echo ""
     echo "Commands:"
     echo " ASH:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "h|help;show_this_message"
-        "R|reinstall;reinstall_ASH"
-        "U|uninstall;uninstall_ASH"
-        "u|update;update_ASH"
+        "i|installation;ASH_installation_helper"
         "s|state;ASH_configuration_helper"
         "x|extra;ASH_extras"
         "e|escape;ANSI_escape_helper"
-        "__utils;ASH_utils"
+        "u|utils;ASH_utils"
         )
-    _ash_fmt_help_items "${ash_arg[@]}"
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
     echo ""
     echo "Run 'ash COMMAND help' for more information on a command"
 }
 
-if [[ $# -eq 0 ]]; then
+if [[ "$1" == "import" ]]; then
+    return
+elif [[ $# -eq 0 ]]; then
     _ash_help
     return
 fi
@@ -34,17 +34,8 @@ case $ASH_CMD in
     h|help|-h|--help)
         _ash_help $*
         ;;
-    R|reinstall)
-        _ash_reinstall $*
-        ;;
-    U|uninstall)
-        _ash_uninstall $*
-        ;;
-    u|update)
-        _ash_update $*
-        ;;
-    r|reload)
-        source $ASH_ROOT/a.sh
+    i|installation)
+        source $ASH_ROOT/ash.d/installation $*
         ;;
     s|state)
         source $ASH_ROOT/ash.d/state $*
@@ -55,21 +46,18 @@ case $ASH_CMD in
     e|escape)
         _ash_escape $*
         ;;
-    utils)
+    u|utils)
         source $ASH_ROOT/ash.d/utils $*
         ;;
+    # Internal / not meant for CLI users
     new)
         source $ASH_ROOT/ash.d/utils new $*
         ;;
     version)
-        if [[ "$1" == "remote" ]]; then
-            _ash_remote_version
-        else
-            echo "$ASH_VERSION"
-        fi
+        source $ASH_ROOT/ash.d/installation version $*
         ;;
-    updated)
-        _ash_is_updated
+    is_updated)
+        source $ASH_ROOT/ash.d/installation is_updated $*
         ;;
     *)
         _ash_fmt_help_unk "ash" $ASH_CMD $*

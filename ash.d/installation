@@ -1,3 +1,22 @@
+
+function _ash_installation_help {
+    echo "Usage:  ash installation COMMAND"
+    echo ""
+    echo "Installation helper"
+    echo ""
+    echo "Commands:"
+    local _ash_help_arg=(
+        "help;show_this_message"
+        "R|reinstall;reinstall_ASH"
+        "U|uninstall;uninstall_ASH"
+        "u|update;update_ASH"
+        "r|reload;reload_ASH"
+        "v|version;show_ASH_version"
+    )
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
+    echo ""
+}
+
 function _ash_reinstall {
     ASH_info "ash.install" "Reinstalling from $ASH_DOWN/install"
 
@@ -40,7 +59,7 @@ function _ash_update {
 }
 
 function _ash_remote_version {
-    local remote=$(curl -sS https://raw.githubusercontent.com/Anonoei/ash-cli/refs/heads/main/a.sh | grep "ASH_VERSION" | tail -n 1)
+    local remote=$(curl -sS https://raw.githubusercontent.com/Anonoei/ash-cli/refs/heads/main/a.sh 2>/dev/null | grep "ASH_VERSION" | tail -n 1)
     local remote="$(echo "$remote" | cut -d'=' -f2)"
     local remote="${remote:1:-1}"
     echo "$remote"
@@ -68,3 +87,46 @@ function _ash_is_updated {
 
     echo "$is_updated"
 }
+
+if [[ "$1" == "import" ]]; then
+    return
+elif [[ $# -eq 0 ]]; then
+    _ash_installation_help
+    return
+fi
+
+ASH_trace "installation" "Start"
+
+ASH_CMD=$1
+shift
+case $ASH_CMD in
+    help|-h|--help)
+        _ash_state_help $*
+        ;;
+    R|reinstall)
+        _ash_reinstall $*
+        ;;
+    U|uninstall)
+        _ash_uninstall $*
+        ;;
+    u|update)
+        _ash_update $*
+        ;;
+    r|reload)
+        source $ASH_ROOT/a.sh
+        ;;
+    # Internal / not meant for CLI users
+    v|version)
+        if [[ "$1" == "remote" ]]; then
+            _ash_remote_version
+        else
+            echo "$ASH_VERSION"
+        fi
+        ;;
+    is_updated)
+        _ash_is_updated
+        ;;
+    *)
+        _ash_fmt_help_unk "ash config" $ASH_CMD $*
+        ;;
+esac

@@ -4,21 +4,22 @@ function _ash_pkg_help {
     echo "Helper for managing packages"
     echo ""
     echo "Commands:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "h|help;show_this_message"
         "i|install;install_a_package"
         "r|remove;remove_a_package"
         "u|update;update packages"
     )
-    _ash_fmt_help_items "${ash_arg[@]}"
-    echo ""
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
 }
 
 if [[ -z "$ASH_PKGMAN" ]]; then
     ASH_PKGMAN=$(bash $ASH_ROOT/extras.d/pkg.d/pkgman)
 fi
 
-if [[ $# -eq 0 ]]; then
+if [[ "$1" == "import" ]]; then
+    return
+elif [[ $# -eq 0 ]]; then
     _ash_pkg_help
     return
 fi

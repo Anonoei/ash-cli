@@ -4,13 +4,12 @@ function _ash_utils_config_help {
     echo "ASH utils config"
     echo ""
     echo "Commands:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "help;show_this_message"
         "new;create_a_new_config"
         "show;show_existing_configs"
     )
-    _ash_fmt_help_items "${ash_arg[@]}"
-    echo ""
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
 }
 
 if [[ "$1" == "import" ]]; then

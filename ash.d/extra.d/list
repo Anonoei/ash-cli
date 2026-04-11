@@ -1,7 +1,0 @@
-function _ash_extra_list {
-    echo "ASH Extras:"
-    while read -r line; do
-        echo "  $line"
-    done < "$ASH_CONFIG/ash.plugs"
-    echo ""
-}

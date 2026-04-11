@@ -4,15 +4,14 @@ function _ash_utils_help {
     echo "ASH utils helper"
     echo ""
     echo "Commands:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "help;show_this_message"
         "ls;list_ASH_utils"
         "log;ASH_log"
         "config;ASH_config"
         "new;create_new_util_instance"
     )
-    _ash_fmt_help_items "${ash_arg[@]}"
-    echo ""
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
 }
 
 function _ash_utils_new {
@@ -31,7 +30,19 @@ function _ash_utils_new {
     esac
 }
 
-if [[ $# -eq 0 ]]; then
+function _ash_utils_list {
+    echo "ASH utils:"
+    for entry in "$ASH_ROOT/utils.d"/*
+    do
+        if [ -f $entry ]; then
+            echo "  $(basename "$entry")"
+        fi
+    done
+}
+
+if [[ "$1" == "import" ]]; then
+    return
+elif [[ $# -eq 0 ]]; then
     _ash_utils_help
     return
 fi
@@ -43,12 +54,7 @@ case $ASH_CMD in
         _ash_utils_help $*
         ;;
     ls)
-        for entry in "$ASH_ROOT/utils.d"/*
-        do
-            if [ -f $entry ]; then
-                echo "$(basename "$entry")"
-            fi
-        done
+        _ash_utils_list $*
         ;;
     log)
         source $ASH_ROOT/utils.d/log $*

@@ -4,17 +4,16 @@ function _ash_state_help {
     echo "Configuration helper"
     echo ""
     echo "Commands:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "help;show_this_message"
-        "config;prints_current_config"
-        "extra;prints_current_extra_config"
-        "edit;open_editor_on_config"
-        "reset;resets_config_to_default"
-        "vars;show_ASH_variables"
-        "changelog;show_ASH_changelog"
+        "c|config;prints_current_config"
+        "x|extra;prints_current_extra_config"
+        "E|edit;open_editor_on_config"
+        "R|reset;resets_config_to_default"
+        "v|vars;show_ASH_variables"
+        "cl|changelog;show_ASH_changelog"
     )
-    _ash_fmt_help_items "${ash_arg[@]}"
-    echo ""
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
 }
 
 if [[ $# -eq 0 ]]; then
@@ -69,29 +68,36 @@ print("\n".join([item["commit"]["author"]["date"] + ";" + item["commit"]["messag
 
 ASH_trace "state" "Start"
 
+if [[ "$1" == "import" ]]; then
+    return
+elif [[ $# -eq 0 ]]; then
+    _ash_help
+    return
+fi
+
 ASH_CMD=$1
 shift
 case $ASH_CMD in
     help|-h|--help)
         _ash_state_help $*
         ;;
-    config)
+    c|config)
         echo "> cat $ASH_CONFIG/ash.conf"
         cat $ASH_CONFIG/ash.conf
         ;;
-    extra)
+    x|extra)
         cat $ASH_CONFIG/ash.plugs
         ;;
-    edit)
+    E|edit)
         vi $ASH_CONFIG/ash.conf
         ;;
-    reset)
+    R|reset)
         _ash_state_reset $*
         ;;
-    vars)
+    v|vars)
         _ash_state_vars $*
         ;;
-    changelog)
+    cl|changelog)
         _ash_state_changelog $*
         ;;
     *)

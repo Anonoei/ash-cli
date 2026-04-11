@@ -13,7 +13,6 @@ ASH_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 source $ASH_ROOT/ash.d/escape
 source $ASH_ROOT/ash.d/fmt
-source $ASH_ROOT/ash.d/install
 
 source $ASH_ROOT/utils.d/config new "ASH" -f "$ASH_CONFIG/ash.conf" -d "$ASH_ROOT/ash.conf.defaults"
 source $ASH_ROOT/utils.d/log new "ASH" -l "INFO"

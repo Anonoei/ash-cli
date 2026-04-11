@@ -7,13 +7,12 @@ function _ash_utils_log_help {
     echo "ASH utils log"
     echo ""
     echo "Commands:"
-    local ash_arg=(
+    local _ash_help_arg=(
         "help;show_this_message"
         "new;create_a_new_logger"
         "show;show_existing_loggers"
     )
-    _ash_fmt_help_items "${ash_arg[@]}"
-    echo ""
+    _ash_fmt_help_items "${_ash_help_arg[@]}"
 }
 
 function _ash_utils_log_level_from_name {
