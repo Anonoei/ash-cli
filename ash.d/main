@@ -59,6 +59,9 @@ case $ASH_CMD in
     is_updated)
         source $ASH_ROOT/ash.d/installation is_updated $*
         ;;
+    git_update)
+        source $ASH_ROOT/ash.d/installation git_update $*
+        ;;
     *)
         _ash_fmt_help_unk "ash" $ASH_CMD $*
         ;;

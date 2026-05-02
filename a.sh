@@ -5,7 +5,7 @@ if [[ ! -z $ASH_VERSION ]]; then
     return
 fi
 
-ASH_VERSION="0.4.0"
+ASH_VERSION="0.4.1"
 ASH_CONFIG="${HOME}/.config/ash"
 ASH_EXTRAS=()
 

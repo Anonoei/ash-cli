@@ -41,18 +41,30 @@ function _ash_uninstall {
 }
 
 function _ash_update {
+    _ash_update_git "$ASH_ROOT" "origin/main"
+}
+
+function _ash_update_git {
+    # $1 = git root
+    # $2 = checkout
+    local u_root=$1
+    local u_pull=$2
+    if [[ $# -lt 2 ]]; then
+        echo "$0 <git root> <checkout branch>"
+        return
+    fi
+
     old_path=$PWD
-    cd $ASH_ROOT
+    cd $u_root
 
-    ASH_info "ash.install" "Updating from $ASH_HOME"
+    ASH_info "ash.install" "Updating $u_root"
 
-    if [[ ! $ASH_HOME == /* ]]; then
-        if [[ ! -z $(git fetch --dry-run) ]]; then
-            git pull
-        fi
+    if [[ ! -z $(git fetch --dry-run) ]]; then
+        echo "Pulling..."
+        git pull
+        git checkout $u_pull
     else
-        rm -rf $ASH_ROOT
-        cp -r $ASH_HOME $ASH_ROOT
+        echo "Already up to date!"
     fi
 
     cd $old_path
@@ -66,10 +78,17 @@ function _ash_remote_version {
 }
 
 function _ash_is_updated {
-    local remote=$(_ash_remote_version)
+    # $1 = local version
+    # $2 = remote version
+    local lver=$1
+    local rver=$2
+    if [[ $# -lt 2 ]]; then
+        lver=$ASH_VERSION
+        rver=$(_ash_remote_version)
+    fi
 
-    IFS='.' read -r l_major l_minor l_patch <<<"$ASH_VERSION"
-    IFS='.' read -r r_major r_minor r_patch <<<"$remote"
+    IFS='.' read -r l_major l_minor l_patch <<<"$lver"
+    IFS='.' read -r r_major r_minor r_patch <<<"$rver"
 
     local is_updated=1
 
@@ -124,7 +143,10 @@ case $ASH_CMD in
         fi
         ;;
     is_updated)
-        _ash_is_updated
+        _ash_is_updated $*
+        ;;
+    git_update)
+        _ash_update_git $*
         ;;
     *)
         _ash_fmt_help_unk "ash config" $ASH_CMD $*
